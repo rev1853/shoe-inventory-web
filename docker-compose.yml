@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: .Dockerfile
+      target: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - storage-data:/var/www/html/storage
+    depends_on: []
+
+  frontend:
+    build:
+      context: .
+      dockerfile: .Dockerfile
+      target: frontend
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
+
+volumes:
+  storage-data:
