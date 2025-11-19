@@ -49,7 +49,7 @@ pipeline {
 
         stage('Run Migrations') {
             steps {
-                sh 'docker compose run --rm backend php artisan migrate --force'
+                sh 'docker compose run --rm backend sh -c "php artisan env && php artisan migrate --force"'
             }
         }
 
