@@ -31,7 +31,7 @@ RUN npm run build
 FROM node:20-alpine AS frontend
 WORKDIR /app
 RUN npm install -g serve
-RUN mkdir -p /app/dist
-COPY --from=frontend-build /app/dist /app/dist
+RUN mkdir -p /app/build
+COPY --from=frontend-build /app/build /app/build
 EXPOSE 4173
-CMD ["serve", "-s", "dist", "-l", "4173"]
+CMD ["serve", "-s", "build", "-l", "4173"]
