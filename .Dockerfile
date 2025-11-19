@@ -16,7 +16,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends git unzip libzip-dev libpng-dev \
     && docker-php-ext-install pdo_mysql zip \
     && rm -rf /var/lib/apt/lists/* \
-    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && if [ -f /var/www/html/.env ]; then chown www-data:www-data /var/www/html/.env && chmod 640 /var/www/html/.env; fi
 USER www-data
 EXPOSE 5003
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=5003"]
