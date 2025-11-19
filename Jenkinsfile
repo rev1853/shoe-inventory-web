@@ -17,6 +17,7 @@ pipeline {
                     sh 'rm -f .env frontend/.env || true'
                     withCredentials([file(credentialsId: 'laravel_env_file', variable: 'ENV_FILE')]) {
                         sh '''
+                            echo $ENV_FILE
                             cp "$ENV_FILE" .env
                             cp "$ENV_FILE" frontend/.env
                             chmod 600 .env frontend/.env
