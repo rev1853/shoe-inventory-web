@@ -53,6 +53,12 @@ pipeline {
             }
         }
 
+        stage('Seed Database') {
+            steps {
+                sh 'docker compose run --rm backend php artisan db:seed --force'
+            }
+        }
+
         stage('Deploy Containers') {
             steps {
                 sh 'docker compose up -d'
