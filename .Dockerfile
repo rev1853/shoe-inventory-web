@@ -3,6 +3,7 @@
 FROM composer:2.8 AS backend-deps
 WORKDIR /app
 COPY composer.json composer.lock artisan ./
+COPY bootstrap ./bootstrap
 RUN composer install --no-dev --prefer-dist --no-interaction --no-progress
 COPY . .
 RUN composer dump-autoload --optimize --classmap-authoritative
