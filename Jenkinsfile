@@ -16,7 +16,6 @@ pipeline {
                 script {
                     sh 'rm -f .env frontend/.env || true'
                     withCredentials([file(credentialsId: 'laravel_env_file', variable: 'ENV_FILE')]) {
-                        sh 'cat $ENV_FILE'
                         sh '''
                             cp "$ENV_FILE" .env
                             cp "$ENV_FILE" frontend/.env

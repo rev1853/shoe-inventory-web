@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - storage-data:/var/www/html/storage
+      - ./.env:/var/www/html/.env:ro
     depends_on: []
 
   frontend:
