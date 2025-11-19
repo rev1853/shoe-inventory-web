@@ -12,6 +12,8 @@ services:
       - storage-data:/var/www/html/storage
     env_file:
       - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on: []
 
   frontend:
