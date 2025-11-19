@@ -24,16 +24,16 @@ pipeline {
 
         stage('Backend Dependencies & Tests') {
             steps {
-                sh 'composer install --no-interaction --prefer-dist'
-                sh 'php artisan key:generate --force'
-                sh 'php artisan test'
+                sh 'docker run --rm -v "$PWD":/app -w /app composer install --no-interaction --prefer-dist'
+                sh 'docker run --rm -v "$PWD":/app -w /app php:8.3-cli php artisan key:generate --force'
+                sh 'docker run --rm -v "$PWD":/app -w /app php:8.3-cli php artisan test'
             }
         }
 
         stage('Frontend Build') {
             steps {
-                sh 'npm ci --prefix frontend'
-                sh 'npm run build --prefix frontend'
+                sh 'docker run --rm -v "$PWD/frontend":/app -w /app node:20 npm ci'
+                sh 'docker run --rm -v "$PWD/frontend":/app -w /app node:20 npm run build'
             }
         }
 
