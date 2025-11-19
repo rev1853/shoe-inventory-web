@@ -13,12 +13,15 @@ pipeline {
 
         stage('Prepare Secrets') {
             steps {
-                withCredentials([file(credentialsId: 'laravel_env_file', variable: 'ENV_FILE')]) {
-                    sh '''
-                        cp "$ENV_FILE" .env
-                        cp "$ENV_FILE" frontend/.env
-                        chmod 600 .env frontend/.env
-                    '''
+                script {
+                    sh 'rm -f .env frontend/.env || true'
+                    withCredentials([file(credentialsId: 'laravel_env_file', variable: 'ENV_FILE')]) {
+                        sh '''
+                            cp "$ENV_FILE" .env
+                            cp "$ENV_FILE" frontend/.env
+                            chmod 600 .env frontend/.env
+                        '''
+                    }
                 }
             }
         }
