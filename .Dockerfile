@@ -18,8 +18,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 USER www-data
-EXPOSE 8000
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+EXPOSE 5003
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=5003"]
 
 FROM node:20 AS frontend-build
 WORKDIR /app
