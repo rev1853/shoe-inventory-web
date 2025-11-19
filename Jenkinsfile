@@ -15,8 +15,11 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'laravel_env_file', variable: 'ENV_FILE')]) {
                     sh '''
-                        cp "$ENV_FILE" .env
-                        cp "$ENV_FILE" frontend/.env
+                        TEMP_ENV=$(mktemp)
+                        cp "$ENV_FILE" "$TEMP_ENV"
+                        docker run --rm -v "$PWD":/app -w /app alpine cp "$TEMP_ENV" /app/.env
+                        docker run --rm -v "$PWD/frontend":/app -w /app alpine cp "$TEMP_ENV" /app/.env
+                        rm "$TEMP_ENV"
                     '''
                 }
             }
