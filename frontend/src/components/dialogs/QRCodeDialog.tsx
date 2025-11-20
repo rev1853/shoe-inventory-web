@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Download, QrCode } from 'lucide-react';
@@ -13,35 +13,43 @@ interface QRCodeDialogProps {
 
 export default function QRCodeDialog({ open, onOpenChange, variant }: QRCodeDialogProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [qrDataUrl, setQrDataUrl] = useState('');
+
   const qrValue = useMemo(() => {
     if (!variant) return '';
     return variant.qr_token || variant.sku;
   }, [variant]);
 
   useEffect(() => {
-    if (variant && canvasRef.current && open && qrValue) {
-      QRCode.toCanvas(
-        canvasRef.current,
-        qrValue,
-        {
-          width: 300,
+    const generate = async () => {
+      if (!variant || !open || !qrValue) return;
+      try {
+        const url = await QRCode.toDataURL(qrValue, {
+          width: 320,
           margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF',
-          },
-        },
-        (error) => {
-          if (error) console.error(error);
+          color: { dark: '#000000', light: '#FFFFFF' },
+        });
+        setQrDataUrl(url);
+        if (canvasRef.current) {
+          await QRCode.toCanvas(canvasRef.current, qrValue, {
+            width: 320,
+            margin: 2,
+            color: { dark: '#000000', light: '#FFFFFF' },
+          });
         }
-      );
-    }
+      } catch (error) {
+        console.error('Failed to generate QR', error);
+        setQrDataUrl('');
+      }
+    };
+
+    void generate();
   }, [variant, open, qrValue]);
 
   const handleDownload = () => {
-    if (!canvasRef.current || !variant) return;
+    const url = qrDataUrl || canvasRef.current?.toDataURL('image/png');
+    if (!url || !variant) return;
 
-    const url = canvasRef.current.toDataURL('image/png');
     const link = document.createElement('a');
     link.download = `QR-${variant.sku}.png`;
     link.href = url;
@@ -64,7 +72,11 @@ export default function QRCodeDialog({ open, onOpenChange, variant }: QRCodeDial
         </DialogHeader>
         <div className="flex flex-col items-center py-6 space-y-4">
           <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
-            <canvas ref={canvasRef} />
+            {qrDataUrl ? (
+              <img src={qrDataUrl} alt="Variant QR code" className="w-64 h-64 object-contain" />
+            ) : (
+              <canvas ref={canvasRef} className="w-64 h-64" />
+            )}
           </div>
           <div className="text-center space-y-1">
             <p className="text-sm text-gray-600">Scan this QR code to select this variant</p>
