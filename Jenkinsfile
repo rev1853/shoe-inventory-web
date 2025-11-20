@@ -59,6 +59,12 @@ pipeline {
             }
         }
 
+        stage('Link Storage') {
+            steps {
+                sh 'docker compose run --rm backend php artisan storage:link'
+            }
+        }
+
         stage('Deploy Containers') {
             steps {
                 sh 'docker compose up -d'
