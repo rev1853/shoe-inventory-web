@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('dashboard/recent-movements', [DashboardController::class, 'recentMovements']);
 
     Route::apiResource('products', ProductController::class);
+    Route::get('variants/scan', [ProductVariantController::class, 'scan']);
     Route::apiResource('variants', ProductVariantController::class);
     Route::apiResource('suppliers', SupplierController::class)->except(['show', 'create', 'edit']);
     Route::apiResource('users', UserController::class)->except(['show', 'create', 'edit']);

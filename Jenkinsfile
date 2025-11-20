@@ -61,7 +61,7 @@ pipeline {
 
         stage('Link Storage') {
             steps {
-                sh 'docker compose run --rm backend php artisan storage:link'
+                sh 'docker compose run --rm --user root backend sh -c "chown -R www-data:www-data public storage && php artisan storage:link --force"'
             }
         }
 

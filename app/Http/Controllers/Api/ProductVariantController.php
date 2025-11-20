@@ -107,7 +107,12 @@ class ProductVariantController extends Controller
             'min_qty' => ['nullable', 'integer', 'min:0'],
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'sell_price' => ['nullable', 'numeric', 'min:0'],
-            'qr_token' => ['nullable', 'string', 'max:100'],
+            'qr_token' => [
+                'nullable',
+                'string',
+                'max:100',
+                Rule::unique('product_variants', 'qr_token')->ignore($variant?->id),
+            ],
             'is_active' => ['sometimes', 'boolean'],
             'image' => ['sometimes', 'nullable', 'image', 'max:5120'],
         ]);
@@ -139,6 +144,8 @@ class ProductVariantController extends Controller
         $data['cost_price'] = $data['cost_price'] ?? ($product?->default_cost_price ?? 0);
         $data['sell_price'] = $data['sell_price'] ?? ($product?->default_sell_price ?? 0);
         $data['is_active'] = $request->boolean('is_active', $variant?->is_active ?? true);
+
+        $data['qr_token'] = $data['qr_token'] ?? ($variant?->qr_token ?? ProductVariant::generateQrToken());
 
         if (! $variant) {
             $data['sku'] = SequenceGenerator::next('variant_sku', 4, 'SKU-');
@@ -174,5 +181,31 @@ class ProductVariantController extends Controller
         Storage::disk('public')->putFileAs('products', $file, $filename);
 
         return $filename;
+    }
+
+    public function scan(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'max:150'],
+        ]);
+
+        $code = trim($validated['code']);
+
+        $variant = ProductVariant::with('product')
+            ->where(function ($query) use ($code) {
+                $query->where('qr_token', $code)
+                    ->orWhere('sku', $code);
+            })
+            ->first();
+
+        if (! $variant) {
+            return response()->json([
+                'message' => 'Variant not found for this QR code.',
+            ], 404);
+        }
+
+        $variant->ensureQrToken();
+
+        return new ProductVariantResource($variant);
     }
 }

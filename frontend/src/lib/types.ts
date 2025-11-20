@@ -31,6 +31,7 @@ export interface ProductVariant {
   min_qty: number;
   cost_price: number;
   sell_price: number;
+  qr_token?: string | null;
   image_filename?: string | null;
   image_url?: string | null;
   product?: {
