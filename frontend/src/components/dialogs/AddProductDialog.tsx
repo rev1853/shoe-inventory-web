@@ -6,6 +6,8 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner@2.0.3';
 import api from '../../lib/api';
+import { requiredText, decimalMax, optionalText } from '../../lib/validation';
+import { showApiError } from '../../lib/errors';
 
 interface AddProductDialogProps {
   open: boolean;
@@ -24,6 +26,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
     default_cost_price: '',
     default_sell_price: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [codePreview, setCodePreview] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetchingCode, setFetchingCode] = useState(false);
@@ -38,6 +41,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
         default_cost_price: '',
         default_sell_price: '',
       });
+      setErrors({});
       setLoading(false);
     };
 
@@ -64,6 +68,28 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nextErrors: Record<string, string> = {};
+    const nameError = requiredText(formData.name, 'Product name', 150);
+    if (nameError) nextErrors.name = nameError;
+    const brandError = requiredText(formData.brand, 'Brand', 100);
+    if (brandError) nextErrors.brand = brandError;
+    const categoryError = requiredText(formData.category, 'Category', 100);
+    if (categoryError) nextErrors.category = categoryError;
+    const descError = optionalText(formData.description, 'Description', 500);
+    if (descError) nextErrors.description = descError;
+    const costError = decimalMax(formData.default_cost_price, 'Default cost price', 9999999999.99, 2);
+    if (costError) nextErrors.default_cost_price = costError;
+    const sellError = decimalMax(formData.default_sell_price, 'Default sell price', 9999999999.99, 2);
+    if (sellError) nextErrors.default_sell_price = sellError;
+
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length) {
+      toast.error(Object.values(nextErrors)[0]);
+      return;
+    }
+
     setLoading(true);
     try {
       await api.post('/products', {
@@ -78,7 +104,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
       onCreated?.();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message ?? 'Failed to add product');
+      showApiError(error, 'Failed to add product');
     } finally {
       setLoading(false);
     }
@@ -102,7 +128,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 disabled
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="name">Product Name *</Label>
               <Input
                 id="name"
@@ -111,6 +137,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="e.g., Nike Air Max 90"
                 required
               />
+              {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="brand">Brand *</Label>
@@ -122,6 +149,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="e.g., Nike"
                 required
               />
+              {errors.brand && <p className="text-xs text-red-600">{errors.brand}</p>}
               <datalist id="brand-options">
                 {brands.map((brand) => (
                   <option key={brand} value={brand} />
@@ -138,6 +166,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="e.g., Sneakers"
                 required
               />
+              {errors.category && <p className="text-xs text-red-600">{errors.category}</p>}
               <datalist id="category-options">
                 {categories.map((category) => (
                   <option key={category} value={category} />
@@ -153,6 +182,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="Product description"
                 rows={3}
               />
+              {errors.description && <p className="text-xs text-red-600">{errors.description}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="costPrice">Default Cost Price ($) *</Label>
@@ -165,6 +195,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="0.00"
                 required
               />
+              {errors.default_cost_price && <p className="text-xs text-red-600">{errors.default_cost_price}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sellPrice">Default Sell Price ($) *</Label>
@@ -177,6 +208,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="0.00"
                 required
               />
+              {errors.default_sell_price && <p className="text-xs text-red-600">{errors.default_sell_price}</p>}
             </div>
           </div>
           <DialogFooter>

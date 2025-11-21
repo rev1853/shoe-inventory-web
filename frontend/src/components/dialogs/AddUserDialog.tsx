@@ -6,6 +6,8 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from 'sonner@2.0.3';
 import api from '../../lib/api';
+import { requiredText } from '../../lib/validation';
+import { showApiError } from '../../lib/errors';
 
 interface AddUserDialogProps {
   open: boolean;
@@ -33,8 +35,20 @@ export default function AddUserDialog({ open, onOpenChange, onCreated }: AddUser
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors: string[] = [];
+    const nameError = requiredText(formData.name, 'Name', 150);
+    if (nameError) errors.push(nameError);
+    const emailError = requiredText(formData.email, 'Email', 150) || (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/.test(formData.email) ? 'Please enter a valid email address.' : null);
+    if (emailError) errors.push(emailError as string);
+    if (!formData.password || formData.password.length < 8) {
+      errors.push('Password must be at least 8 characters.');
+    }
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match!');
+      errors.push('Passwords do not match.');
+    }
+
+    if (errors.length) {
+      toast.error(errors[0]);
       return;
     }
     setLoading(true);
@@ -51,7 +65,7 @@ export default function AddUserDialog({ open, onOpenChange, onCreated }: AddUser
       onCreated?.();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message ?? 'Failed to add user');
+      showApiError(error, 'Failed to add user');
     } finally {
       setLoading(false);
     }

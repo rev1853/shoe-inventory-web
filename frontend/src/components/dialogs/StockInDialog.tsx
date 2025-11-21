@@ -11,6 +11,8 @@ import { ProductVariant, Supplier } from '../../lib/types';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { QrCode } from 'lucide-react';
 import { fetchVariantByCode } from '../../lib/variantLookup';
+import { showApiError } from '../../lib/errors';
+import { optionalText, positiveInteger, requiredText } from '../../lib/validation';
 
 interface StockInDialogProps {
   open: boolean;
@@ -34,6 +36,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
   const [scanError, setScanError] = useState('');
   const [lastScan, setLastScan] = useState('');
   const [scannedVariant, setScannedVariant] = useState<ProductVariant | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const variantOptions = useMemo(() => {
     const list = [...variants];
@@ -68,6 +71,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
       setScanError('');
       setLastScan('');
       setScannedVariant(null);
+      setErrors({});
       fetchReference();
       setLoading(false);
     }
@@ -100,12 +104,21 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.variantId) {
-      toast.error('Please select a variant.');
-      return;
-    }
-    if (!formData.supplierId) {
-      toast.error('Please select a supplier.');
+
+    const nextErrors: Record<string, string> = {};
+    if (!formData.variantId) nextErrors.variantId = 'Please select a variant.';
+    if (!formData.supplierId) nextErrors.supplierId = 'Please select a supplier.';
+    const qtyError = positiveInteger(formData.quantity, 'Quantity');
+    if (qtyError) nextErrors.quantity = qtyError;
+    const referenceError = optionalText(formData.reference, 'Reference', 100);
+    if (referenceError) nextErrors.reference = referenceError;
+    const reasonError = requiredText(formData.reason, 'Reason', 100);
+    if (reasonError) nextErrors.reason = reasonError;
+
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length) {
+      toast.error(Object.values(nextErrors)[0]);
       return;
     }
 
@@ -123,7 +136,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
       onSuccess?.();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message ?? 'Failed to add stock');
+      showApiError(error, 'Failed to add stock');
     } finally {
       setLoading(false);
     }
@@ -180,6 +193,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                   ))}
                 </SelectContent>
               </Select>
+              {errors.variantId && <p className="text-xs text-red-600">{errors.variantId}</p>}
               {scannerOpen && (
                 <div className="space-y-2 rounded-lg border bg-gray-50 p-3">
                   <Scanner
@@ -208,6 +222,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                 placeholder="e.g., 20"
                 required
               />
+              {errors.quantity && <p className="text-xs text-red-600">{errors.quantity}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="supplierId">Supplier *</Label>
@@ -223,6 +238,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                   ))}
                 </SelectContent>
               </Select>
+              {errors.supplierId && <p className="text-xs text-red-600">{errors.supplierId}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="reference">Reference Number</Label>
@@ -232,6 +248,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                 onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
                 placeholder="e.g., PO-2025-001"
               />
+              {errors.reference && <p className="text-xs text-red-600">{errors.reference}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="reason">Reason *</Label>
@@ -242,6 +259,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                 rows={3}
                 required
               />
+              {errors.reason && <p className="text-xs text-red-600">{errors.reason}</p>}
             </div>
           </div>
           <DialogFooter>

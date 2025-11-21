@@ -11,6 +11,8 @@ import { ProductVariant } from '../../lib/types';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { QrCode } from 'lucide-react';
 import { fetchVariantByCode } from '../../lib/variantLookup';
+import { showApiError } from '../../lib/errors';
+import { nonNegativeInteger, optionalText, requiredText } from '../../lib/validation';
 
 interface StockAdjustDialogProps {
   open: boolean;
@@ -104,6 +106,19 @@ export default function StockAdjustDialog({ open, onOpenChange, variant, variant
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeVariant) return;
+
+    const errors: string[] = [];
+    const quantityError = nonNegativeInteger(formData.newQuantity, 'New quantity');
+    if (quantityError) errors.push(quantityError);
+    const referenceError = optionalText(formData.reference, 'Reference', 100);
+    if (referenceError) errors.push(referenceError);
+    const reasonError = requiredText(formData.reason, 'Reason', 100);
+    if (reasonError) errors.push(reasonError);
+
+    if (errors.length) {
+      toast.error(errors[0]);
+      return;
+    }
     setLoading(true);
     try {
       await api.post('/stock-movements', {
@@ -117,7 +132,7 @@ export default function StockAdjustDialog({ open, onOpenChange, variant, variant
       onSuccess?.();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message ?? 'Failed to adjust stock');
+      showApiError(error, 'Failed to adjust stock');
     } finally {
       setLoading(false);
     }

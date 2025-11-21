@@ -7,6 +7,8 @@ import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner@2.0.3';
 import api from '../../lib/api';
 import { Supplier } from '../../lib/types';
+import { optionalText, requiredText } from '../../lib/validation';
+import { showApiError } from '../../lib/errors';
 
 interface EditSupplierDialogProps {
   open: boolean;
@@ -39,6 +41,21 @@ export default function EditSupplierDialog({ open, onOpenChange, supplier, onUpd
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supplier) return;
+
+    const errors: string[] = [];
+    const nameError = requiredText(formData.name, 'Supplier name', 150);
+    if (nameError) errors.push(nameError);
+    const contactError = requiredText(formData.contact, 'Contact', 150);
+    if (contactError) errors.push(contactError);
+    const addressError = requiredText(formData.address, 'Address', 255);
+    if (addressError) errors.push(addressError);
+    const notesError = optionalText(formData.notes, 'Notes', 500);
+    if (notesError) errors.push(notesError);
+
+    if (errors.length) {
+      toast.error(errors[0]);
+      return;
+    }
     setLoading(true);
     try {
       await api.put(`/suppliers/${supplier.id}`, formData);
@@ -46,7 +63,7 @@ export default function EditSupplierDialog({ open, onOpenChange, supplier, onUpd
       onUpdated?.();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message ?? 'Failed to update supplier');
+      showApiError(error, 'Failed to update supplier');
     } finally {
       setLoading(false);
     }

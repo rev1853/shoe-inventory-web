@@ -11,6 +11,8 @@ import { ProductVariant } from '../../lib/types';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { QrCode } from 'lucide-react';
 import { fetchVariantByCode } from '../../lib/variantLookup';
+import { showApiError } from '../../lib/errors';
+import { optionalText, positiveInteger, requiredText } from '../../lib/validation';
 
 interface StockOutDialogProps {
   open: boolean;
@@ -97,8 +99,18 @@ export default function StockOutDialog({ open, onOpenChange, variants, preselect
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.variantId) {
-      toast.error('Please select a variant.');
+
+    const errors: string[] = [];
+    if (!formData.variantId) errors.push('Please select a variant.');
+    const qtyError = positiveInteger(formData.quantity, 'Quantity');
+    if (qtyError) errors.push(qtyError);
+    const referenceError = optionalText(formData.reference, 'Reference', 100);
+    if (referenceError) errors.push(referenceError);
+    const reasonError = requiredText(formData.reason, 'Reason', 100);
+    if (reasonError) errors.push(reasonError);
+
+    if (errors.length) {
+      toast.error(errors[0]);
       return;
     }
 
@@ -115,7 +127,7 @@ export default function StockOutDialog({ open, onOpenChange, variants, preselect
       onSuccess?.();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message ?? 'Failed to remove stock');
+      showApiError(error, 'Failed to remove stock');
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { toast } from 'sonner@2.0.3';
 import api from '../../lib/api';
 import { ProductVariant } from '../../lib/types';
+import { decimalMax, nonNegativeInteger, nonNegativeNumber, requiredText } from '../../lib/validation';
+import { showApiError } from '../../lib/errors';
 
 interface EditVariantDialogProps {
   open: boolean;
@@ -29,6 +31,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
     sellPrice: '',
     image: null as File | null,
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -43,12 +46,37 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
         sellPrice: variant.sell_price.toString(),
         image: null,
       });
+      setErrors({});
     }
   }, [variant, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!variant) return;
+
+    const nextErrors: Record<string, string> = {};
+    const colorError = requiredText(formData.color, 'Color', 50);
+    if (colorError) nextErrors.color = colorError;
+    const sizeVal = Number(formData.size);
+    if (!formData.size || Number.isNaN(sizeVal) || sizeVal <= 0) {
+      nextErrors.size = 'Size must be greater than 0.';
+    } else {
+      const sizeError = decimalMax(formData.size, 'Size', 999.9, 1);
+      if (sizeError) nextErrors.size = sizeError;
+    }
+    const minQtyError = nonNegativeInteger(formData.minQty, 'Minimum quantity');
+    if (minQtyError) nextErrors.minQty = minQtyError;
+    const costError = decimalMax(formData.costPrice, 'Cost price', 9999999999.99, 2) || nonNegativeNumber(formData.costPrice, 'Cost price');
+    if (costError) nextErrors.costPrice = costError;
+    const sellError = decimalMax(formData.sellPrice, 'Sell price', 9999999999.99, 2) || nonNegativeNumber(formData.sellPrice, 'Sell price');
+    if (sellError) nextErrors.sellPrice = sellError;
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length) {
+      toast.error(Object.values(nextErrors)[0]);
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = new FormData();
@@ -74,7 +102,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
       onUpdated?.();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message ?? 'Failed to update variant');
+      showApiError(error, 'Failed to update variant');
     } finally {
       setLoading(false);
     }
@@ -91,7 +119,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-            <div className="space-y-2 md:col-span-2">
+            <div className="space-y-2">
               <Label>SKU (Auto-generated)</Label>
               <Input value={variant.sku} disabled className="bg-gray-50" />
             </div>
@@ -116,6 +144,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                 required
               />
+              {errors.color && <p className="text-xs text-red-600">{errors.color}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sizeSystem">Size System *</Label>
@@ -135,11 +164,12 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
               <Input
                 id="size"
                 type="number"
-                step="0.5"
+                step="0.1"
                 value={formData.size}
                 onChange={(e) => setFormData({ ...formData, size: e.target.value })}
                 required
               />
+              {errors.size && <p className="text-xs text-red-600">{errors.size}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="minQty">Minimum Quantity *</Label>
@@ -150,6 +180,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, minQty: e.target.value })}
                 required
               />
+              {errors.minQty && <p className="text-xs text-red-600">{errors.minQty}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="costPrice">Cost Price ($) *</Label>
@@ -161,6 +192,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, costPrice: e.target.value })}
                 required
               />
+              {errors.costPrice && <p className="text-xs text-red-600">{errors.costPrice}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sellPrice">Sell Price ($) *</Label>
@@ -172,6 +204,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, sellPrice: e.target.value })}
                 required
               />
+              {errors.sellPrice && <p className="text-xs text-red-600">{errors.sellPrice}</p>}
             </div>
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="image">Update Product Image</Label>

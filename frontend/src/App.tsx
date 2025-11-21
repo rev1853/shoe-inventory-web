@@ -10,6 +10,13 @@ import Users from './components/Users';
 import StockMovements from './components/StockMovements';
 import api, { setAuthToken, setUnauthorizedHandler } from './lib/api';
 import { User } from './lib/types';
+import { toast } from 'sonner@2.0.3';
+
+const unpackUser = (payload: any): User => {
+  // API resources may return `{ data: User }` (UserResource) or plain User
+  if (payload?.data?.email) return payload.data as User;
+  return payload as User;
+};
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -30,8 +37,10 @@ function App() {
 
     setAuthToken(storedToken);
     api.get<User>('/auth/me')
-      .then((response) => setUser(response.data))
-      .catch(() => {
+      .then((response) => setUser(unpackUser(response.data)))
+      .catch((error) => {
+        console.error('Failed to restore session', error);
+        toast.error('Session expired. Please log in again.');
         setAuthToken(null);
         localStorage.removeItem('auth_token');
       })
@@ -46,7 +55,7 @@ function App() {
 
     setAuthToken(data.token);
     localStorage.setItem('auth_token', data.token);
-    setUser(data.user);
+    setUser(unpackUser(data.user));
   };
 
   const handleLogout = async () => {

@@ -6,6 +6,8 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from 'sonner@2.0.3';
 import api from '../../lib/api';
+import { decimalMax, nonNegativeInteger, nonNegativeNumber, requiredText } from '../../lib/validation';
+import { showApiError } from '../../lib/errors';
 
 interface AddVariantDialogProps {
   open: boolean;
@@ -29,6 +31,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
     sellPrice: '',
     image: null as File | null,
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [skuPreview, setSkuPreview] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -45,6 +48,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
         sellPrice: '',
         image: null,
       });
+      setErrors({});
       setSkuPreview('');
       setLoading(false);
       return;
@@ -65,8 +69,28 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.productId) {
-      toast.error('Please select a product.');
+    const nextErrors: Record<string, string> = {};
+
+    if (!formData.productId) nextErrors.productId = 'Please select a product.';
+    const colorError = requiredText(formData.color, 'Color', 50);
+    if (colorError) nextErrors.color = colorError;
+    const sizeVal = Number(formData.size);
+    if (!formData.size || Number.isNaN(sizeVal) || sizeVal <= 0) {
+      nextErrors.size = 'Size must be greater than 0.';
+    } else {
+      const sizeError = decimalMax(formData.size, 'Size', 999.9, 1);
+      if (sizeError) nextErrors.size = sizeError;
+    }
+    const minQtyError = nonNegativeInteger(formData.minQty, 'Minimum quantity');
+    if (minQtyError) nextErrors.minQty = minQtyError;
+    const costError = decimalMax(formData.costPrice, 'Cost price', 9999999999.99, 2) || nonNegativeNumber(formData.costPrice, 'Cost price');
+    if (costError) nextErrors.costPrice = costError;
+    const sellError = decimalMax(formData.sellPrice, 'Sell price', 9999999999.99, 2) || nonNegativeNumber(formData.sellPrice, 'Sell price');
+    if (sellError) nextErrors.sellPrice = sellError;
+
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length) {
+      toast.error(Object.values(nextErrors)[0]);
       return;
     }
 
@@ -94,7 +118,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
       onCreated?.();
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message ?? 'Failed to add variant');
+      showApiError(error, 'Failed to add variant');
     } finally {
       setLoading(false);
     }
@@ -127,6 +151,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                   ))}
                 </SelectContent>
               </Select>
+              {errors.productId && <p className="text-xs text-red-600">{errors.productId}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="gender">Gender *</Label>
@@ -150,6 +175,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="e.g., Black/White"
                 required
               />
+              {errors.color && <p className="text-xs text-red-600">{errors.color}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sizeSystem">Size System *</Label>
@@ -169,12 +195,13 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
               <Input
                 id="size"
                 type="number"
-                step="0.5"
+                step="0.1"
                 value={formData.size}
                 onChange={(e) => setFormData({ ...formData, size: e.target.value })}
                 placeholder="e.g., 9.5"
                 required
               />
+              {errors.size && <p className="text-xs text-red-600">{errors.size}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="minQty">Minimum Quantity *</Label>
@@ -186,6 +213,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="e.g., 5"
                 required
               />
+              {errors.minQty && <p className="text-xs text-red-600">{errors.minQty}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="costPrice">Cost Price ($) *</Label>
@@ -198,6 +226,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="0.00"
                 required
               />
+              {errors.costPrice && <p className="text-xs text-red-600">{errors.costPrice}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sellPrice">Sell Price ($) *</Label>
@@ -210,6 +239,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="0.00"
                 required
               />
+              {errors.sellPrice && <p className="text-xs text-red-600">{errors.sellPrice}</p>}
             </div>
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="image">Product Image</Label>
