@@ -17,6 +17,10 @@ class StockMovementController extends Controller
     {
         $query = StockMovement::with(['variant.product', 'supplier', 'user'])->latest();
 
+        if ($variantId = $request->integer('variant_id')) {
+            $query->where('variant_id', $variantId);
+        }
+
         if ($search = $request->string('search')->toString()) {
             $query->where(function ($builder) use ($search) {
                 $builder->where('reason', 'like', "%{$search}%")

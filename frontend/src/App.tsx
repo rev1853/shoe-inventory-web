@@ -8,12 +8,13 @@ import Variants from './components/Variants';
 import Suppliers from './components/Suppliers';
 import Users from './components/Users';
 import StockMovements from './components/StockMovements';
+import BarcodeScanner from './components/BarcodeScanner';
+import VariantDetail from './components/VariantDetail';
 import api, { setAuthToken, setUnauthorizedHandler } from './lib/api';
 import { User } from './lib/types';
 import { toast } from 'sonner@2.0.3';
 
 const unpackUser = (payload: any): User => {
-  // API resources may return `{ data: User }` (UserResource) or plain User
   if (payload?.data?.email) return payload.data as User;
   return payload as User;
 };
@@ -36,7 +37,8 @@ function App() {
     }
 
     setAuthToken(storedToken);
-    api.get<User>('/auth/me')
+    api
+      .get<User>('/auth/me')
       .then((response) => setUser(unpackUser(response.data)))
       .catch((error) => {
         console.error('Failed to restore session', error);
@@ -78,16 +80,19 @@ function App() {
     );
   }
 
+  const defaultRoute = user?.role === 'admin' ? '/dashboard' : '/products';
+
+  const renderIfAllowed = (roles: Array<User['role']>, element: JSX.Element) => {
+    if (!user) return null;
+    return roles.includes(user.role) ? element : <Navigate to={defaultRoute} replace />;
+  };
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route 
-          path="/login" 
-          element={
-            user ? 
-            <Navigate to="/dashboard" /> : 
-            <LoginPage onLogin={handleLogin} />
-          } 
+        <Route
+          path="/login"
+          element={user ? <Navigate to={defaultRoute} replace /> : <LoginPage onLogin={handleLogin} />}
         />
         <Route
           path="/*"
@@ -95,17 +100,25 @@ function App() {
             user ? (
               <DashboardLayout currentUser={user} onLogout={handleLogout}>
                 <Routes>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/variants" element={<Variants />} />
-                  <Route path="/suppliers" element={<Suppliers />} />
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/stock-movements" element={<StockMovements />} />
-                  <Route path="*" element={<Navigate to="/dashboard" />} />
+                  <Route path="/dashboard" element={renderIfAllowed(['admin'], <Dashboard />)} />
+                  <Route
+                    path="/products"
+                    element={renderIfAllowed(['admin', 'staff'], <Products canManage={user.role === 'admin'} />)}
+                  />
+                  <Route path="/variants" element={renderIfAllowed(['admin', 'staff'], <Variants role={user.role} />)} />
+                  <Route path="/suppliers" element={renderIfAllowed(['admin'], <Suppliers />)} />
+                  <Route path="/users" element={renderIfAllowed(['admin'], <Users />)} />
+                  <Route path="/stock-movements" element={renderIfAllowed(['admin', 'staff'], <StockMovements />)} />
+                  <Route path="/barcode-scanner" element={renderIfAllowed(['admin', 'staff'], <BarcodeScanner />)} />
+                  <Route
+                    path="/variant-detail/:code"
+                    element={renderIfAllowed(['admin', 'staff'], <VariantDetail currentUser={user} />)}
+                  />
+                  <Route path="*" element={<Navigate to={defaultRoute} replace />} />
                 </Routes>
               </DashboardLayout>
             ) : (
-              <Navigate to="/login" />
+              <Navigate to="/login" replace />
             )
           }
         />

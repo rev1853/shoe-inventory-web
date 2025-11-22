@@ -22,7 +22,13 @@ import { toast } from 'sonner@2.0.3';
 type SortField = 'sku' | 'color' | 'size' | 'stock';
 type SortOrder = 'asc' | 'desc';
 
-export default function Variants() {
+type UserRole = 'admin' | 'staff';
+
+interface VariantsProps {
+  role: UserRole;
+}
+
+export default function Variants({ role }: VariantsProps) {
   const [searchParams] = useSearchParams();
   const productFilterParam = searchParams.get('product');
 
@@ -49,6 +55,8 @@ export default function Variants() {
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const canManageVariants = role === 'admin';
+  const canAdjustStock = ['admin', 'staff'].includes(role);
 
   const fetchVariants = useCallback(async () => {
     setLoading(true);
@@ -150,36 +158,40 @@ export default function Variants() {
 
   const actions = (variant: ProductVariant) => (
     <div className="flex gap-1">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => {
-          setSelectedVariant(variant);
-          setStockInOpen(true);
-        }}
-      >
-        <ArrowUp className="w-4 h-4 text-green-600" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => {
-          setSelectedVariant(variant);
-          setStockOutOpen(true);
-        }}
-      >
-        <ArrowDown className="w-4 h-4 text-orange-600" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => {
-          setSelectedVariant(variant);
-          setStockAdjustOpen(true);
-        }}
-      >
-        <Settings className="w-4 h-4 text-blue-600" />
-      </Button>
+      {canAdjustStock && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setSelectedVariant(variant);
+              setStockInOpen(true);
+            }}
+          >
+            <ArrowUp className="w-4 h-4 text-green-600" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setSelectedVariant(variant);
+              setStockOutOpen(true);
+            }}
+          >
+            <ArrowDown className="w-4 h-4 text-orange-600" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setSelectedVariant(variant);
+              setStockAdjustOpen(true);
+            }}
+          >
+            <Settings className="w-4 h-4 text-blue-600" />
+          </Button>
+        </>
+      )}
       <Button
         variant="ghost"
         size="icon"
@@ -190,26 +202,30 @@ export default function Variants() {
       >
         <QrCode className="w-4 h-4 text-purple-600" />
       </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => {
-          setSelectedVariant(variant);
-          setEditDialogOpen(true);
-        }}
-      >
-        <Pencil className="w-4 h-4 text-gray-600" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => {
-          setSelectedVariant(variant);
-          setDeleteDialogOpen(true);
-        }}
-      >
-        <Trash2 className="w-4 h-4 text-red-600" />
-      </Button>
+      {canManageVariants && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setSelectedVariant(variant);
+              setEditDialogOpen(true);
+            }}
+          >
+            <Pencil className="w-4 h-4 text-gray-600" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setSelectedVariant(variant);
+              setDeleteDialogOpen(true);
+            }}
+          >
+            <Trash2 className="w-4 h-4 text-red-600" />
+          </Button>
+        </>
+      )}
     </div>
   );
 
@@ -217,13 +233,17 @@ export default function Variants() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl">Manage Variants</h1>
-          <p className="text-gray-500 text-sm sm:text-base">Manage product variants and stock levels</p>
+          <h1 className="text-2xl sm:text-3xl">{canManageVariants ? 'Manage Variants' : 'Variants'}</h1>
+          <p className="text-gray-500 text-sm sm:text-base">
+            {canManageVariants ? 'Manage product variants and stock levels' : 'View variants and update stock'}
+          </p>
         </div>
-        <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Variant
-        </Button>
+        {canManageVariants && (
+          <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Variant
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -405,35 +425,39 @@ export default function Variants() {
         </CardContent>
       </Card>
 
-      <AddVariantDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-        products={products}
-        onCreated={fetchVariants}
-      />
-      <EditVariantDialog
-        open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
-        variant={selectedVariant}
-        onUpdated={fetchVariants}
-      />
-      <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        title="Delete Variant"
-        description={`Are you sure you want to delete variant "${selectedVariant?.sku}"?`}
-        onConfirm={async () => {
-          if (!selectedVariant) return;
-          try {
-            await api.delete(`/variants/${selectedVariant.id}`);
-            toast.success('Variant deleted');
-            setDeleteDialogOpen(false);
-            fetchVariants();
-          } catch (error: any) {
-            toast.error(error.response?.data?.message ?? 'Failed to delete variant');
-          }
-        }}
-      />
+      {canManageVariants && (
+        <>
+          <AddVariantDialog
+            open={addDialogOpen}
+            onOpenChange={setAddDialogOpen}
+            products={products}
+            onCreated={fetchVariants}
+          />
+          <EditVariantDialog
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+            variant={selectedVariant}
+            onUpdated={fetchVariants}
+          />
+          <DeleteConfirmDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            title="Delete Variant"
+            description={`Are you sure you want to delete variant "${selectedVariant?.sku}"?`}
+            onConfirm={async () => {
+              if (!selectedVariant) return;
+              try {
+                await api.delete(`/variants/${selectedVariant.id}`);
+                toast.success('Variant deleted');
+                setDeleteDialogOpen(false);
+                fetchVariants();
+              } catch (error: any) {
+                toast.error(error.response?.data?.message ?? 'Failed to delete variant');
+              }
+            }}
+          />
+        </>
+      )}
       <StockInDialog
         open={stockInOpen}
         onOpenChange={setStockInOpen}

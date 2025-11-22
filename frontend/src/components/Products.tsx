@@ -16,7 +16,11 @@ import { LookupOptions, Product } from '../lib/types';
 type SortField = 'code' | 'name' | 'brand' | 'category' | 'default_cost_price' | 'default_sell_price';
 type SortOrder = 'asc' | 'desc';
 
-export default function Products() {
+interface ProductsProps {
+  canManage: boolean;
+}
+
+export default function Products({ canManage }: ProductsProps) {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,13 +119,17 @@ export default function Products() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl">Manage Products</h1>
-          <p className="text-gray-500 text-sm sm:text-base">Add, edit, and manage your product catalog</p>
+          <h1 className="text-2xl sm:text-3xl">{canManage ? 'Manage Products' : 'Products'}</h1>
+          <p className="text-gray-500 text-sm sm:text-base">
+            {canManage ? 'Add, edit, and manage your product catalog' : 'View products and quickly jump into variants'}
+          </p>
         </div>
-        <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Product
-        </Button>
+        {canManage && (
+          <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Product
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -231,20 +239,24 @@ export default function Products() {
                           >
                             <Grid3x3 className="w-4 h-4 text-blue-600" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(product)}
-                          >
-                            <Pencil className="w-4 h-4 text-gray-600" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDelete(product)}
-                          >
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </Button>
+                          {canManage && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEdit(product)}
+                              >
+                                <Pencil className="w-4 h-4 text-gray-600" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDelete(product)}
+                              >
+                                <Trash2 className="w-4 h-4 text-red-600" />
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -268,38 +280,42 @@ export default function Products() {
         </CardContent>
       </Card>
 
-      <AddProductDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-        brands={brands}
-        categories={categories}
-        onCreated={fetchProducts}
-      />
-      <EditProductDialog
-        open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
-        product={selectedProduct}
-        brands={brands}
-        categories={categories}
-        onUpdated={fetchProducts}
-      />
-      <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        title="Delete Product"
-        description={`Are you sure you want to delete "${selectedProduct?.name}"? This will also delete all variants.`}
-        onConfirm={async () => {
-          if (!selectedProduct) return;
-          try {
-            await api.delete(`/products/${selectedProduct.id}`);
-            toast.success('Product deleted');
-            setDeleteDialogOpen(false);
-            fetchProducts();
-          } catch (error: any) {
-            toast.error(error.response?.data?.message ?? 'Failed to delete product');
-          }
-        }}
-      />
+      {canManage && (
+        <>
+          <AddProductDialog
+            open={addDialogOpen}
+            onOpenChange={setAddDialogOpen}
+            brands={brands}
+            categories={categories}
+            onCreated={fetchProducts}
+          />
+          <EditProductDialog
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+            product={selectedProduct}
+            brands={brands}
+            categories={categories}
+            onUpdated={fetchProducts}
+          />
+          <DeleteConfirmDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            title="Delete Product"
+            description={`Are you sure you want to delete "${selectedProduct?.name}"? This will also delete all variants.`}
+            onConfirm={async () => {
+              if (!selectedProduct) return;
+              try {
+                await api.delete(`/products/${selectedProduct.id}`);
+                toast.success('Product deleted');
+                setDeleteDialogOpen(false);
+                fetchProducts();
+              } catch (error: any) {
+                toast.error(error.response?.data?.message ?? 'Failed to delete product');
+              }
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }
