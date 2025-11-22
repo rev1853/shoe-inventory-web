@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'sonner@2.0.3';
 
 const api = axios.create({
     // baseURL: 'https://shoe-inventory-api.truesurvi4.xyz/api',
@@ -22,8 +23,16 @@ export const setUnauthorizedHandler = (handler: (() => void) | null) => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401 && unauthorizedHandler) {
+        const status = error.response?.status;
+        const message = error.response?.data?.message ?? 'An unexpected error occurred.';
+
+        if (status === 401 && unauthorizedHandler) {
             unauthorizedHandler();
+            toast.error(message || 'Session expired. Please log in again.');
+        } else if (status) {
+            toast.error(message);
+        } else {
+            toast.error('Network error. Please check your connection.');
         }
 
         return Promise.reject(error);

@@ -6,7 +6,6 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Camera, Keyboard, ScanLine, X } from 'lucide-react';
 import { Scanner } from '@yudiel/react-qr-scanner';
-import { toast } from 'sonner@2.0.3';
 import { fetchVariantByCode } from '../lib/variantLookup';
 
 export default function BarcodeScanner() {
@@ -28,13 +27,11 @@ export default function BarcodeScanner() {
     setSearching(true);
 
     try {
-      const variant = await fetchVariantByCode(trimmed);
-      toast.success(`Variant found: ${variant.sku}`);
+      await fetchVariantByCode(trimmed);
       navigate(`/variant-detail/${encodeURIComponent(trimmed)}`);
     } catch (error: any) {
       const message = error?.response?.data?.message ?? error.message ?? 'Variant not found.';
       setScanError(message);
-      toast.error(message);
     } finally {
       setSearching(false);
     }
