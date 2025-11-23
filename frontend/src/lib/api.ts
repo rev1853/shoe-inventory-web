@@ -2,8 +2,8 @@ import axios from 'axios';
 import { toast } from 'sonner@2.0.3';
 
 const api = axios.create({
-    // baseURL: 'https://shoe-inventory-api.truesurvi4.xyz/api',
-    baseURL: "http://localhost:8000/api"
+    baseURL: 'https://shoe-inventory-api.truesurvi4.xyz/api',
+    // baseURL: "http://localhost:8000/api"
 });
 
 let unauthorizedHandler: (() => void) | null = null;
