@@ -157,7 +157,7 @@ export default function StockAdjustDialog({ open, onOpenChange, variant, variant
               <div className="flex items-center justify-between gap-2">
                 <div className="space-y-1">
                   <Label htmlFor="variantSelect">Variant *</Label>
-                  <p className="text-xs text-gray-500">Pick a variant or scan its QR code</p>
+                  <p className="text-xs text-muted-foreground">Pick a variant or scan its QR code</p>
                 </div>
                 <Button
                   type="button"
@@ -203,7 +203,7 @@ export default function StockAdjustDialog({ open, onOpenChange, variant, variant
                 </SelectContent>
               </Select>
               {scannerOpen && (
-                <div className="space-y-2 rounded-lg border bg-gray-50 p-3">
+                <div className="space-y-2 rounded-lg border bg-muted p-3">
                   <Scanner
                     onScan={handleScan}
                     onError={(error) => setScanError((error as Error)?.message ?? 'Camera unavailable')}
@@ -214,15 +214,15 @@ export default function StockAdjustDialog({ open, onOpenChange, variant, variant
                       video: { width: '100%', borderRadius: '12px' },
                     }}
                   />
-                  <p className="text-xs text-gray-500">Scan the QR code to load the variant and its current quantity.</p>
-                  {scanError && <p className="text-xs text-red-600">{scanError}</p>}
+                  <p className="text-xs text-muted-foreground">Scan the QR code to load the variant and its current quantity.</p>
+                  {scanError && <p className="text-xs text-destructive">{scanError}</p>}
                 </div>
               )}
             </div>
             {activeVariant && (
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="text-sm text-gray-600">Current Stock</div>
-                <div className="text-2xl text-blue-600">{activeVariant.current_qty} units</div>
+              <div className="p-3 bg-muted rounded-lg border border-border">
+                <div className="text-sm text-muted-foreground">Current Stock</div>
+                <div className="text-2xl text-primary">{activeVariant.current_qty} units</div>
               </div>
             )}
             <div className="space-y-2">
@@ -236,7 +236,7 @@ export default function StockAdjustDialog({ open, onOpenChange, variant, variant
                 required
               />
               {formData.newQuantity && activeVariant && (
-                <p className={`text-sm ${diff >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-sm ${diff >= 0 ? 'text-secondary-foreground' : 'text-primary'}`}>
                   Change: {diff >= 0 ? '+' : ''}{diff} units
                 </p>
               )}
@@ -264,7 +264,7 @@ export default function StockAdjustDialog({ open, onOpenChange, variant, variant
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !activeVariant} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-70">
+            <Button type="submit" disabled={loading || !activeVariant} className="bg-primary hover:bg-primary/90 disabled:opacity-70">
               {loading ? 'Saving...' : 'Adjust Stock'}
             </Button>
           </DialogFooter>

@@ -108,10 +108,10 @@ export default function Products({ canManage }: ProductsProps) {
   const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
     <button
       onClick={() => handleSort(field)}
-      className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+      className="flex items-center gap-1 hover:text-primary transition-colors"
     >
       {children}
-      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-blue-600' : 'text-gray-400'}`} />
+      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-primary' : 'text-gray-400'}`} />
     </button>
   );
 
@@ -125,7 +125,7 @@ export default function Products({ canManage }: ProductsProps) {
           </p>
         </div>
         {canManage && (
-          <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+          <Button onClick={() => setAddDialogOpen(true)} className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Add Product
           </Button>
@@ -221,7 +221,7 @@ export default function Products({ canManage }: ProductsProps) {
                   </tr>
                 ) : (
                   products.map((product) => (
-                    <tr key={product.id} className="border-b hover:bg-gray-50">
+                    <tr key={product.id} className="border-b hover:bg-muted">
                       <td className="py-3 px-2 sm:px-4 font-mono text-xs sm:text-sm">{product.code}</td>
                       <td className="py-3 px-2 sm:px-4 text-sm sm:text-base">{product.name}</td>
                       <td className="py-3 px-2 sm:px-4 text-sm hidden md:table-cell">{product.brand}</td>
@@ -237,7 +237,7 @@ export default function Products({ canManage }: ProductsProps) {
                             onClick={() => handleManageVariants(product)}
                             title="Manage Variants"
                           >
-                            <Grid3x3 className="w-4 h-4 text-blue-600" />
+                            <Grid3x3 className="w-4 h-4 text-primary" />
                           </Button>
                           {canManage && (
                             <>
@@ -253,7 +253,7 @@ export default function Products({ canManage }: ProductsProps) {
                                 size="icon"
                                 onClick={() => handleDelete(product)}
                               >
-                                <Trash2 className="w-4 h-4 text-red-600" />
+                                <Trash2 className="w-4 h-4 text-primary" />
                               </Button>
                             </>
                           )}

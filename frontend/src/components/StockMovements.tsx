@@ -91,9 +91,9 @@ export default function StockMovements() {
   };
 
   const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
-    <button onClick={() => handleSort(field)} className="flex items-center gap-1 hover:text-blue-600 transition-colors">
+    <button onClick={() => handleSort(field)} className="flex items-center gap-1 hover:text-primary transition-colors">
       {children}
-      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-blue-600' : 'text-gray-400'}`} />
+      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-primary' : 'text-gray-400'}`} />
     </button>
   );
 
@@ -137,11 +137,11 @@ export default function StockMovements() {
           <p className="text-gray-500 text-sm sm:text-base">Track every stock change</p>
         </div>
         <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
-          <Button onClick={() => setStockInOpen(true)} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={() => setStockInOpen(true)} variant="secondary">
             <ArrowUp className="w-4 h-4 mr-2" />
             Stock In
           </Button>
-          <Button onClick={() => setStockOutOpen(true)} className="bg-orange-600 hover:bg-orange-700">
+          <Button onClick={() => setStockOutOpen(true)}>
             <ArrowDown className="w-4 h-4 mr-2" />
             Stock Out
           </Button>
@@ -150,7 +150,6 @@ export default function StockMovements() {
               setSelectedVariant(null);
               setStockAdjustOpen(true);
             }}
-            className="bg-blue-600 hover:bg-blue-700"
           >
             <Settings className="w-4 h-4 mr-2" />
             Adjust
@@ -226,17 +225,17 @@ export default function StockMovements() {
                     </tr>
                   ) : (
                   sortedMovements.map((movement) => (
-                      <tr key={movement.id} className="border-b hover:bg-gray-50">
+                      <tr key={movement.id} className="border-b hover:bg-muted">
                         <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
                           {new Date(movement.created_at).toLocaleString()}
                         </td>
                         <td className="py-3 px-2 sm:px-4">
                           <span className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
                             movement.movement_type === 'IN'
-                              ? 'bg-green-100 text-green-700'
+                              ? 'bg-secondary text-secondary-foreground'
                               : movement.movement_type === 'OUT'
-                                ? 'bg-orange-100 text-orange-700'
-                                : 'bg-blue-100 text-blue-700'
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted text-foreground'
                           }`}>
                             {movement.movement_type === 'IN' ? 'Stock In' : movement.movement_type === 'OUT' ? 'Stock Out' : 'Adjustment'}
                           </span>
@@ -244,7 +243,7 @@ export default function StockMovements() {
                         <td className="py-3 px-2 sm:px-4 font-mono text-xs hidden md:table-cell">{movement.variant.sku}</td>
                         <td className="py-3 px-2 sm:px-4 text-sm">{movement.variant.product?.name ?? 'N/A'}</td>
                         <td className={`py-3 px-2 sm:px-4 text-sm font-semibold whitespace-nowrap ${
-                          movement.qty_change >= 0 ? 'text-green-600' : 'text-red-600'
+                          movement.qty_change >= 0 ? 'text-secondary-foreground' : 'text-primary'
                         }`}>
                           {movement.qty_change >= 0 ? `+${movement.qty_change}` : movement.qty_change}
                         </td>

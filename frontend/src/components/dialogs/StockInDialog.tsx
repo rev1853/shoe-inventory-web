@@ -155,7 +155,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
               <div className="flex items-center justify-between gap-2">
                 <div className="space-y-1">
                   <Label htmlFor="variantId">Variant *</Label>
-                  <p className="text-xs text-gray-500">Choose from the list or scan its QR code</p>
+                  <p className="text-xs text-muted-foreground">Choose from the list or scan its QR code</p>
                 </div>
                 <Button
                   type="button"
@@ -193,9 +193,9 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                   ))}
                 </SelectContent>
               </Select>
-              {errors.variantId && <p className="text-xs text-red-600">{errors.variantId}</p>}
+              {errors.variantId && <p className="text-xs text-destructive">{errors.variantId}</p>}
               {scannerOpen && (
-                <div className="space-y-2 rounded-lg border bg-gray-50 p-3">
+                <div className="space-y-2 rounded-lg border bg-muted p-3">
                   <Scanner
                     onScan={handleScan}
                     onError={(error) => setScanError((error as Error)?.message ?? 'Camera unavailable')}
@@ -206,8 +206,8 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                       video: { width: '100%', borderRadius: '12px' },
                     }}
                   />
-                  <p className="text-xs text-gray-500">Aim your camera at the variant QR. We will auto-select it if recognized.</p>
-                  {scanError && <p className="text-xs text-red-600">{scanError}</p>}
+                  <p className="text-xs text-muted-foreground">Aim your camera at the variant QR. We will auto-select it if recognized.</p>
+                  {scanError && <p className="text-xs text-destructive">{scanError}</p>}
                 </div>
               )}
             </div>
@@ -222,7 +222,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                 placeholder="e.g., 20"
                 required
               />
-              {errors.quantity && <p className="text-xs text-red-600">{errors.quantity}</p>}
+              {errors.quantity && <p className="text-xs text-destructive">{errors.quantity}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="supplierId">Supplier *</Label>
@@ -238,7 +238,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                   ))}
                 </SelectContent>
               </Select>
-              {errors.supplierId && <p className="text-xs text-red-600">{errors.supplierId}</p>}
+              {errors.supplierId && <p className="text-xs text-destructive">{errors.supplierId}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="reference">Reference Number</Label>
@@ -248,7 +248,7 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                 onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
                 placeholder="e.g., PO-2025-001"
               />
-              {errors.reference && <p className="text-xs text-red-600">{errors.reference}</p>}
+              {errors.reference && <p className="text-xs text-destructive">{errors.reference}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="reason">Reason *</Label>
@@ -259,14 +259,14 @@ export default function StockInDialog({ open, onOpenChange, variants, suppliers,
                 rows={3}
                 required
               />
-              {errors.reason && <p className="text-xs text-red-600">{errors.reason}</p>}
+              {errors.reason && <p className="text-xs text-destructive">{errors.reason}</p>}
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 disabled:opacity-70">
+            <Button type="submit" variant="secondary" disabled={loading} className="disabled:opacity-70">
               {loading ? 'Saving...' : 'Add Stock'}
             </Button>
           </DialogFooter>

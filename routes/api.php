@@ -34,7 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('sequences/product-code', [SequenceController::class, 'nextProductCode']);
         Route::get('sequences/variant-sku', [SequenceController::class, 'nextVariantSku']);
-        Route::get('sequences/reference/{type}', [SequenceController::class, 'nextReference']);
     });
 
     Route::middleware('role:admin,staff')->group(function () {
@@ -51,5 +50,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('stock-movements', [StockMovementController::class, 'store']);
 
         Route::get('lookups/options', [LookupController::class, 'options']);
+        Route::get('sequences/reference/{type}', [SequenceController::class, 'nextReference']);
     });
 });

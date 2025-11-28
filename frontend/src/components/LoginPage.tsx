@@ -29,10 +29,10 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f6f4f2] to-[#e4d7d8] p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center">
+          <div className="mx-auto w-16 h-16 bg-primary rounded-xl flex items-center justify-center">
             <Package className="w-8 h-8 text-white" />
           </div>
           <div>
@@ -64,8 +64,8 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                 required
               />
             </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            <Button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-70">
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <Button type="submit" disabled={loading} className="w-full disabled:opacity-70">
               {loading ? 'Signing in...' : 'Login'}
             </Button>
           </form>

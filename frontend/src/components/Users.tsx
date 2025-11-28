@@ -75,10 +75,10 @@ export default function Users() {
   const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
     <button
       onClick={() => handleSort(field)}
-      className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+      className="flex items-center gap-1 hover:text-primary transition-colors"
     >
       {children}
-      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-blue-600' : 'text-gray-400'}`} />
+      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-primary' : 'text-gray-400'}`} />
     </button>
   );
 
@@ -89,7 +89,7 @@ export default function Users() {
           <h1 className="text-2xl sm:text-3xl">Manage Users</h1>
           <p className="text-gray-500 text-sm sm:text-base">Manage user accounts and permissions</p>
         </div>
-        <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+        <Button onClick={() => setAddDialogOpen(true)} className="w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-2" />
           Add User
         </Button>
@@ -173,7 +173,7 @@ export default function Users() {
                   </tr>
                 ) : (
                   users.map((user) => (
-                    <tr key={user.id} className="border-b hover:bg-gray-50">
+                    <tr key={user.id} className="border-b hover:bg-muted">
                       <td className="py-3 px-2 sm:px-4 text-sm sm:text-base">{user.name}</td>
                       <td className="py-3 px-2 sm:px-4 text-sm text-gray-600">{user.email}</td>
                       <td className="py-3 px-2 sm:px-4 text-sm hidden md:table-cell">
@@ -195,7 +195,7 @@ export default function Users() {
                             }}
                             title="Reset Password"
                           >
-                            <KeyRound className="w-4 h-4 text-blue-600" />
+                            <KeyRound className="w-4 h-4 text-primary" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -215,7 +215,7 @@ export default function Users() {
                               setDeleteDialogOpen(true);
                             }}
                           >
-                            <Trash2 className="w-4 h-4 text-red-600" />
+                            <Trash2 className="w-4 h-4 text-primary" />
                           </Button>
                         </div>
                       </td>

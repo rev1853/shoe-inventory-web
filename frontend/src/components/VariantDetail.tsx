@@ -250,12 +250,12 @@ export default function VariantDetail({ currentUser }: VariantDetailProps) {
                   <Separator />
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Profit Margin</span>
-                    <span className="text-green-600">{profitMargin}%</span>
+                    <span className="text-secondary-foreground">{profitMargin}%</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Profit per Unit</span>
-                    <span className="text-green-600">
+                    <span className="text-secondary-foreground">
                       ${(variant.sell_price - variant.cost_price).toFixed(2)}
                     </span>
                   </div>
@@ -294,7 +294,7 @@ export default function VariantDetail({ currentUser }: VariantDetailProps) {
               <span className="text-muted-foreground text-sm">units</span>
             </div>
             {variant.current_qty <= variant.min_qty && (
-              <p className="text-xs text-orange-600 mt-2">Reorder needed</p>
+              <p className="text-xs text-destructive mt-2">Reorder needed</p>
             )}
           </CardContent>
         </Card>
@@ -356,18 +356,18 @@ export default function VariantDetail({ currentUser }: VariantDetailProps) {
                   <div
                     className={`p-2 rounded-full ${
                       movement.movement_type === 'IN'
-                        ? 'bg-green-100'
+                        ? 'bg-secondary'
                         : movement.movement_type === 'OUT'
-                          ? 'bg-red-100'
-                          : 'bg-blue-100'
+                          ? 'bg-primary'
+                          : 'bg-muted'
                     }`}
                   >
                     {movement.movement_type === 'IN' ? (
-                      <TrendingUp className="h-4 w-4 text-green-600" />
+                      <TrendingUp className="h-4 w-4 text-secondary-foreground" />
                     ) : movement.movement_type === 'OUT' ? (
-                      <TrendingDown className="h-4 w-4 text-red-600" />
+                      <TrendingDown className="h-4 w-4 text-primary-foreground" />
                     ) : (
-                      <Settings className="h-4 w-4 text-blue-600" />
+                      <Settings className="h-4 w-4 text-foreground" />
                     )}
                   </div>
                   <div className="flex-1 space-y-1">
@@ -375,10 +375,10 @@ export default function VariantDetail({ currentUser }: VariantDetailProps) {
                       <span
                         className={
                           movement.movement_type === 'IN'
-                            ? 'text-green-600'
+                            ? 'text-secondary-foreground'
                             : movement.movement_type === 'OUT'
-                              ? 'text-red-600'
-                              : 'text-blue-600'
+                              ? 'text-primary'
+                              : 'text-foreground'
                         }
                       >
                         {movement.qty_change > 0 ? '+' : ''}

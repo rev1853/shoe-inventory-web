@@ -137,7 +137,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="e.g., Nike Air Max 90"
                 required
               />
-              {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
+              {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="brand">Brand *</Label>
@@ -149,7 +149,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="e.g., Nike"
                 required
               />
-              {errors.brand && <p className="text-xs text-red-600">{errors.brand}</p>}
+              {errors.brand && <p className="text-xs text-destructive">{errors.brand}</p>}
               <datalist id="brand-options">
                 {brands.map((brand) => (
                   <option key={brand} value={brand} />
@@ -166,7 +166,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="e.g., Sneakers"
                 required
               />
-              {errors.category && <p className="text-xs text-red-600">{errors.category}</p>}
+              {errors.category && <p className="text-xs text-destructive">{errors.category}</p>}
               <datalist id="category-options">
                 {categories.map((category) => (
                   <option key={category} value={category} />
@@ -182,7 +182,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="Product description"
                 rows={3}
               />
-              {errors.description && <p className="text-xs text-red-600">{errors.description}</p>}
+              {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="costPrice">Default Cost Price ($) *</Label>
@@ -195,7 +195,7 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="0.00"
                 required
               />
-              {errors.default_cost_price && <p className="text-xs text-red-600">{errors.default_cost_price}</p>}
+              {errors.default_cost_price && <p className="text-xs text-destructive">{errors.default_cost_price}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sellPrice">Default Sell Price ($) *</Label>
@@ -208,14 +208,14 @@ export default function AddProductDialog({ open, onOpenChange, brands, categorie
                 placeholder="0.00"
                 required
               />
-              {errors.default_sell_price && <p className="text-xs text-red-600">{errors.default_sell_price}</p>}
+              {errors.default_sell_price && <p className="text-xs text-destructive">{errors.default_sell_price}</p>}
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-70">
+            <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 disabled:opacity-70">
               {loading ? 'Saving...' : 'Add Product'}
             </Button>
           </DialogFooter>

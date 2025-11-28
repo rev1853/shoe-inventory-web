@@ -146,7 +146,7 @@ export default function StockOutDialog({ open, onOpenChange, variants, preselect
               <div className="flex items-center justify-between gap-2">
                 <div className="space-y-1">
                   <Label htmlFor="variantId">Variant *</Label>
-                  <p className="text-xs text-gray-500">Select manually or scan the QR code</p>
+                  <p className="text-xs text-muted-foreground">Select manually or scan the QR code</p>
                 </div>
                 <Button
                   type="button"
@@ -185,7 +185,7 @@ export default function StockOutDialog({ open, onOpenChange, variants, preselect
                 </SelectContent>
               </Select>
               {scannerOpen && (
-                <div className="space-y-2 rounded-lg border bg-gray-50 p-3">
+                <div className="space-y-2 rounded-lg border bg-muted p-3">
                   <Scanner
                     onScan={handleScan}
                     onError={(error) => setScanError((error as Error)?.message ?? 'Camera unavailable')}
@@ -196,8 +196,8 @@ export default function StockOutDialog({ open, onOpenChange, variants, preselect
                       video: { width: '100%', borderRadius: '12px' },
                     }}
                   />
-                  <p className="text-xs text-gray-500">Point your camera at the QR code to auto-fill the variant.</p>
-                  {scanError && <p className="text-xs text-red-600">{scanError}</p>}
+                  <p className="text-xs text-muted-foreground">Point your camera at the QR code to auto-fill the variant.</p>
+                  {scanError && <p className="text-xs text-destructive">{scanError}</p>}
                 </div>
               )}
             </div>
@@ -237,7 +237,7 @@ export default function StockOutDialog({ open, onOpenChange, variants, preselect
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="bg-orange-600 hover:bg-orange-700 disabled:opacity-70">
+            <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 disabled:opacity-70">
               {loading ? 'Saving...' : 'Remove Stock'}
             </Button>
           </DialogFooter>

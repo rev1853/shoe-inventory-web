@@ -10,6 +10,9 @@ import api from '../lib/api';
 import { DashboardChartPoint, DashboardMetrics, Product, ProductVariant, StockMovement, Supplier } from '../lib/types';
 import { toast } from 'sonner@2.0.3';
 
+const STOCK_IN_COLOR = '#c7a6ac';
+const STOCK_OUT_COLOR = '#8c1d2a';
+
 export default function Dashboard() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [chartData, setChartData] = useState<DashboardChartPoint[]>([]);
@@ -75,15 +78,15 @@ export default function Dashboard() {
           <p className="text-gray-500 text-sm sm:text-base">Overview of your inventory</p>
         </div>
         <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
-          <Button onClick={() => setStockInOpen(true)} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={() => setStockInOpen(true)} variant="secondary">
             <ArrowUp className="w-4 h-4 mr-2" />
             Quick Stock In
           </Button>
-          <Button onClick={() => setStockOutOpen(true)} className="bg-orange-600 hover:bg-orange-700">
+          <Button onClick={() => setStockOutOpen(true)}>
             <ArrowDown className="w-4 h-4 mr-2" />
             Quick Stock Out
           </Button>
-          <Button onClick={() => setAddProductOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={() => setAddProductOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Add Product
           </Button>
@@ -94,7 +97,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm">Total Products</CardTitle>
-            <Package className="w-4 h-4 text-blue-600" />
+            <Package className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-xl sm:text-2xl">{metrics?.products ?? '—'}</div>
@@ -105,7 +108,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm">Total Variants</CardTitle>
-            <Grid3x3 className="w-4 h-4 text-purple-600" />
+            <Grid3x3 className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-xl sm:text-2xl">{metrics?.variants ?? '—'}</div>
@@ -116,7 +119,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm">Low Stock</CardTitle>
-            <AlertTriangle className="w-4 h-4 text-orange-600" />
+            <AlertTriangle className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-xl sm:text-2xl">{metrics?.low_stock ?? '—'}</div>
@@ -127,7 +130,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm">Out of Stock</CardTitle>
-            <XCircle className="w-4 h-4 text-red-600" />
+            <XCircle className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-xl sm:text-2xl">{metrics?.out_of_stock ?? '—'}</div>
@@ -147,8 +150,24 @@ export default function Dashboard() {
               <XAxis dataKey="label" />
               <YAxis />
               <Tooltip />
-              <Area type="monotone" dataKey="stock_in" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.6} name="Stock In" />
-              <Area type="monotone" dataKey="stock_out" stackId="2" stroke="#f97316" fill="#f97316" fillOpacity={0.6} name="Stock Out" />
+              <Area
+                type="monotone"
+                dataKey="stock_in"
+                stackId="1"
+                stroke={STOCK_IN_COLOR}
+                fill={STOCK_IN_COLOR}
+                fillOpacity={0.6}
+                name="Stock In"
+              />
+              <Area
+                type="monotone"
+                dataKey="stock_out"
+                stackId="2"
+                stroke={STOCK_OUT_COLOR}
+                fill={STOCK_OUT_COLOR}
+                fillOpacity={0.6}
+                name="Stock Out"
+              />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>
@@ -181,10 +200,10 @@ export default function Dashboard() {
                       <td className="py-3 px-2 sm:px-4">
                         <span className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
                           movement.movement_type === 'IN'
-                            ? 'bg-green-100 text-green-700'
+                            ? 'bg-secondary text-secondary-foreground'
                             : movement.movement_type === 'OUT'
-                              ? 'bg-orange-100 text-orange-700'
-                              : 'bg-blue-100 text-blue-700'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-foreground'
                         }`}>
                           {movement.movement_type === 'IN' ? 'Stock In' : movement.movement_type === 'OUT' ? 'Stock Out' : 'Adjustment'}
                         </span>
@@ -192,7 +211,7 @@ export default function Dashboard() {
                       <td className="py-3 px-2 sm:px-4 text-xs font-mono hidden md:table-cell">{movement.variant.sku}</td>
                       <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm">{movement.variant.product?.name ?? 'N/A'}</td>
                       <td className={`py-3 px-2 sm:px-4 text-xs sm:text-sm whitespace-nowrap ${
-                        movement.qty_change >= 0 ? 'text-green-600' : 'text-red-600'
+                        movement.qty_change >= 0 ? 'text-secondary-foreground' : 'text-primary'
                       }`}>
                         {movement.qty_change >= 0 ? `+${movement.qty_change}` : movement.qty_change}
                       </td>

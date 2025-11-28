@@ -113,7 +113,7 @@ export default function EditProductDialog({ open, onOpenChange, product, brands,
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
-              {errors.name && <p className="text-xs text-red-600">{errors.name}</p>}
+              {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="brand">Brand *</Label>
@@ -124,7 +124,7 @@ export default function EditProductDialog({ open, onOpenChange, product, brands,
                 onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                 required
               />
-              {errors.brand && <p className="text-xs text-red-600">{errors.brand}</p>}
+              {errors.brand && <p className="text-xs text-destructive">{errors.brand}</p>}
               <datalist id="brand-edit-options">
                 {brands.map((brand) => (
                   <option key={brand} value={brand} />
@@ -140,7 +140,7 @@ export default function EditProductDialog({ open, onOpenChange, product, brands,
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 required
               />
-              {errors.category && <p className="text-xs text-red-600">{errors.category}</p>}
+              {errors.category && <p className="text-xs text-destructive">{errors.category}</p>}
               <datalist id="category-edit-options">
                 {categories.map((category) => (
                   <option key={category} value={category} />
@@ -155,7 +155,7 @@ export default function EditProductDialog({ open, onOpenChange, product, brands,
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
               />
-              {errors.description && <p className="text-xs text-red-600">{errors.description}</p>}
+              {errors.description && <p className="text-xs text-destructive">{errors.description}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="costPrice">Default Cost Price ($) *</Label>
@@ -167,7 +167,7 @@ export default function EditProductDialog({ open, onOpenChange, product, brands,
                 onChange={(e) => setFormData({ ...formData, default_cost_price: e.target.value })}
                 required
               />
-              {errors.default_cost_price && <p className="text-xs text-red-600">{errors.default_cost_price}</p>}
+              {errors.default_cost_price && <p className="text-xs text-destructive">{errors.default_cost_price}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sellPrice">Default Sell Price ($) *</Label>
@@ -179,14 +179,14 @@ export default function EditProductDialog({ open, onOpenChange, product, brands,
                 onChange={(e) => setFormData({ ...formData, default_sell_price: e.target.value })}
                 required
               />
-              {errors.default_sell_price && <p className="text-xs text-red-600">{errors.default_sell_price}</p>}
+              {errors.default_sell_price && <p className="text-xs text-destructive">{errors.default_sell_price}</p>}
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-70">
+            <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 disabled:opacity-70">
               {loading ? 'Saving...' : 'Update Product'}
             </Button>
           </DialogFooter>

@@ -146,7 +146,7 @@ export default function EditUserDialog({ open, onOpenChange, user, onUpdated }: 
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-70">
+            <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 disabled:opacity-70">
               {loading ? 'Saving...' : 'Update User'}
             </Button>
           </DialogFooter>

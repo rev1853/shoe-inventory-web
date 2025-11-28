@@ -151,7 +151,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                   ))}
                 </SelectContent>
               </Select>
-              {errors.productId && <p className="text-xs text-red-600">{errors.productId}</p>}
+              {errors.productId && <p className="text-xs text-destructive">{errors.productId}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="gender">Gender *</Label>
@@ -175,7 +175,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="e.g., Black/White"
                 required
               />
-              {errors.color && <p className="text-xs text-red-600">{errors.color}</p>}
+              {errors.color && <p className="text-xs text-destructive">{errors.color}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sizeSystem">Size System *</Label>
@@ -201,7 +201,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="e.g., 9.5"
                 required
               />
-              {errors.size && <p className="text-xs text-red-600">{errors.size}</p>}
+              {errors.size && <p className="text-xs text-destructive">{errors.size}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="minQty">Minimum Quantity *</Label>
@@ -213,7 +213,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="e.g., 5"
                 required
               />
-              {errors.minQty && <p className="text-xs text-red-600">{errors.minQty}</p>}
+              {errors.minQty && <p className="text-xs text-destructive">{errors.minQty}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="costPrice">Cost Price ($) *</Label>
@@ -226,7 +226,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="0.00"
                 required
               />
-              {errors.costPrice && <p className="text-xs text-red-600">{errors.costPrice}</p>}
+              {errors.costPrice && <p className="text-xs text-destructive">{errors.costPrice}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sellPrice">Sell Price ($) *</Label>
@@ -239,7 +239,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
                 placeholder="0.00"
                 required
               />
-              {errors.sellPrice && <p className="text-xs text-red-600">{errors.sellPrice}</p>}
+              {errors.sellPrice && <p className="text-xs text-destructive">{errors.sellPrice}</p>}
             </div>
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="image">Product Image</Label>
@@ -255,7 +255,7 @@ export default function AddVariantDialog({ open, onOpenChange, products, onCreat
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-70">
+            <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 disabled:opacity-70">
               {loading ? 'Saving...' : 'Add Variant'}
             </Button>
           </DialogFooter>

@@ -67,10 +67,10 @@ export default function Suppliers() {
   const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
     <button
       onClick={() => handleSort(field)}
-      className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+      className="flex items-center gap-1 hover:text-primary transition-colors"
     >
       {children}
-      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-blue-600' : 'text-gray-400'}`} />
+      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-primary' : 'text-gray-400'}`} />
     </button>
   );
 
@@ -81,7 +81,7 @@ export default function Suppliers() {
           <h1 className="text-2xl sm:text-3xl">Manage Suppliers</h1>
           <p className="text-gray-500 text-sm sm:text-base">Manage your supplier information</p>
         </div>
-        <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+        <Button onClick={() => setAddDialogOpen(true)} className="w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-2" />
           Add Supplier
         </Button>
@@ -130,7 +130,7 @@ export default function Suppliers() {
                     </tr>
                   ) : (
                     suppliers.map((supplier) => (
-                      <tr key={supplier.id} className="border-b hover:bg-gray-50">
+                      <tr key={supplier.id} className="border-b hover:bg-muted">
                         <td className="py-3 px-2 sm:px-4 text-sm sm:text-base">{supplier.name}</td>
                         <td className="py-3 px-2 sm:px-4 text-sm hidden md:table-cell">{supplier.contact}</td>
                         <td className="py-3 px-2 sm:px-4 text-sm text-gray-600 hidden lg:table-cell">{supplier.address}</td>
@@ -148,14 +148,14 @@ export default function Suppliers() {
                               <Pencil className="w-4 h-4 text-gray-600" />
                             </Button>
                             <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setSelectedSupplier(supplier);
-                                setDeleteDialogOpen(true);
-                              }}
-                            >
-                              <Trash2 className="w-4 h-4 text-red-600" />
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setSelectedSupplier(supplier);
+                              setDeleteDialogOpen(true);
+                            }}
+                          >
+                              <Trash2 className="w-4 h-4 text-primary" />
                             </Button>
                           </div>
                         </td>

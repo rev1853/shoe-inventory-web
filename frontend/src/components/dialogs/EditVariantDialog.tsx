@@ -144,7 +144,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                 required
               />
-              {errors.color && <p className="text-xs text-red-600">{errors.color}</p>}
+              {errors.color && <p className="text-xs text-destructive">{errors.color}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sizeSystem">Size System *</Label>
@@ -169,7 +169,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, size: e.target.value })}
                 required
               />
-              {errors.size && <p className="text-xs text-red-600">{errors.size}</p>}
+              {errors.size && <p className="text-xs text-destructive">{errors.size}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="minQty">Minimum Quantity *</Label>
@@ -180,7 +180,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, minQty: e.target.value })}
                 required
               />
-              {errors.minQty && <p className="text-xs text-red-600">{errors.minQty}</p>}
+              {errors.minQty && <p className="text-xs text-destructive">{errors.minQty}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="costPrice">Cost Price ($) *</Label>
@@ -192,7 +192,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, costPrice: e.target.value })}
                 required
               />
-              {errors.costPrice && <p className="text-xs text-red-600">{errors.costPrice}</p>}
+              {errors.costPrice && <p className="text-xs text-destructive">{errors.costPrice}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="sellPrice">Sell Price ($) *</Label>
@@ -204,7 +204,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
                 onChange={(e) => setFormData({ ...formData, sellPrice: e.target.value })}
                 required
               />
-              {errors.sellPrice && <p className="text-xs text-red-600">{errors.sellPrice}</p>}
+              {errors.sellPrice && <p className="text-xs text-destructive">{errors.sellPrice}</p>}
             </div>
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="image">Update Product Image</Label>
@@ -220,7 +220,7 @@ export default function EditVariantDialog({ open, onOpenChange, variant, onUpdat
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 disabled:opacity-70">
+            <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 disabled:opacity-70">
               {loading ? 'Saving...' : 'Update Variant'}
             </Button>
           </DialogFooter>

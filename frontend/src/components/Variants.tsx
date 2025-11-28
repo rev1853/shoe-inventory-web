@@ -152,7 +152,7 @@ export default function Variants({ role }: VariantsProps) {
   const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
     <button className="flex items-center gap-1 text-xs" onClick={() => handleSort(field)}>
       {children}
-      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-blue-600' : 'text-gray-400'}`} />
+      <ArrowUpDown className={`w-3 h-3 ${sortField === field ? 'text-primary' : 'text-gray-400'}`} />
     </button>
   );
 
@@ -168,7 +168,7 @@ export default function Variants({ role }: VariantsProps) {
               setStockInOpen(true);
             }}
           >
-            <ArrowUp className="w-4 h-4 text-green-600" />
+            <ArrowUp className="w-4 h-4 text-secondary-foreground" />
           </Button>
           <Button
             variant="ghost"
@@ -178,7 +178,7 @@ export default function Variants({ role }: VariantsProps) {
               setStockOutOpen(true);
             }}
           >
-            <ArrowDown className="w-4 h-4 text-orange-600" />
+            <ArrowDown className="w-4 h-4 text-primary" />
           </Button>
           <Button
             variant="ghost"
@@ -188,7 +188,7 @@ export default function Variants({ role }: VariantsProps) {
               setStockAdjustOpen(true);
             }}
           >
-            <Settings className="w-4 h-4 text-blue-600" />
+            <Settings className="w-4 h-4 text-primary" />
           </Button>
         </>
       )}
@@ -200,7 +200,7 @@ export default function Variants({ role }: VariantsProps) {
           setQrCodeOpen(true);
         }}
       >
-        <QrCode className="w-4 h-4 text-purple-600" />
+        <QrCode className="w-4 h-4 text-primary" />
       </Button>
       {canManageVariants && (
         <>
@@ -222,7 +222,7 @@ export default function Variants({ role }: VariantsProps) {
               setDeleteDialogOpen(true);
             }}
           >
-            <Trash2 className="w-4 h-4 text-red-600" />
+            <Trash2 className="w-4 h-4 text-primary" />
           </Button>
         </>
       )}
@@ -239,7 +239,7 @@ export default function Variants({ role }: VariantsProps) {
           </p>
         </div>
         {canManageVariants && (
-          <Button onClick={() => setAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+          <Button onClick={() => setAddDialogOpen(true)} className="w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Add Variant
           </Button>
@@ -310,14 +310,14 @@ export default function Variants({ role }: VariantsProps) {
                 <div key={productId} className="border rounded-lg overflow-hidden">
                   <button
                     onClick={() => toggleProductExpand(Number(productId))}
-                    className="w-full bg-gray-50 hover:bg-gray-100 transition-colors p-4 flex items-center gap-4"
+                    className="w-full bg-muted hover:bg-accent transition-colors p-4 flex items-center gap-4"
                   >
                     {isExpanded ? (
                       <ChevronDown className="w-5 h-5 text-gray-600 flex-shrink-0" />
                     ) : (
                       <ChevronRight className="w-5 h-5 text-gray-600 flex-shrink-0" />
                     )}
-                    <div className="w-16 h-16 bg-white rounded border flex-shrink-0 overflow-hidden">
+                    <div className="w-16 h-16 bg-card rounded border flex-shrink-0 overflow-hidden">
                       {productVariants[0].image_url && (
                         <ImageWithFallback
                           src={productVariants[0].image_url}
@@ -338,7 +338,7 @@ export default function Variants({ role }: VariantsProps) {
                   {isExpanded && (
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50 border-t border-b">
+                        <thead className="bg-muted border-t border-b border-border">
                           <tr>
                             <th className="text-left py-3 px-4 text-sm">Image</th>
                             <th className="text-left py-3 px-4 text-sm">SKU</th>
@@ -361,7 +361,7 @@ export default function Variants({ role }: VariantsProps) {
                           {productVariants.map((variant) => {
                             const status = getStockStatus(variant);
                             return (
-                              <tr key={variant.id} className="border-b hover:bg-gray-50">
+                              <tr key={variant.id} className="border-b hover:bg-muted">
                                 <td className="py-3 px-4">
                                   <button
                                     onClick={() => {
@@ -370,7 +370,7 @@ export default function Variants({ role }: VariantsProps) {
                                         setImagePreviewOpen(true);
                                       }
                                     }}
-                                    className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all"
+                                    className="w-12 h-12 bg-muted rounded flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-primary transition-all"
                                   >
                                     {variant.image_url ? (
                                       <ImageWithFallback src={variant.image_url} alt={variant.sku} className="w-full h-full object-cover" />
@@ -390,10 +390,10 @@ export default function Variants({ role }: VariantsProps) {
                                 <td className="py-3 px-4 text-sm hidden md:table-cell">
                                   <span className={`px-2 py-1 text-xs rounded ${
                                     status === 'out'
-                                      ? 'bg-red-100 text-red-600'
+                                      ? 'bg-primary text-primary-foreground'
                                       : status === 'low'
-                                        ? 'bg-orange-100 text-orange-600'
-                                        : 'bg-green-100 text-green-600'
+                                        ? 'bg-secondary text-secondary-foreground'
+                                        : 'bg-muted text-foreground'
                                   }`}>
                                     {status === 'out' ? 'Out of stock' : status === 'low' ? 'Low stock' : 'OK'}
                                   </span>

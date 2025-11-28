@@ -87,7 +87,7 @@ export default function QRCodeDialog({ open, onOpenChange, variant }: QRCodeDial
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
-          <Button onClick={handleDownload} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={handleDownload} className="bg-primary hover:bg-primary/90">
             <Download className="w-4 h-4 mr-2" />
             Download QR Code
           </Button>

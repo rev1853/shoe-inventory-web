@@ -129,7 +129,7 @@ export default function BarcodeScanner() {
                   Re-try scan
                 </Button>
               </div>
-              {scanError && <p className="text-xs text-red-600">{scanError}</p>}
+              {scanError && <p className="text-xs text-destructive">{scanError}</p>}
               <p className="text-xs text-muted-foreground">
                 Tip: hold steady and ensure the barcode/QR is inside the frame.
               </p>
@@ -163,7 +163,7 @@ export default function BarcodeScanner() {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <h3 className="flex items-center gap-2">
-                <Camera className="h-5 w-5 text-blue-600" />
+                <Camera className="h-5 w-5 text-primary" />
                 Camera Mode
               </h3>
               <ul className="space-y-1 text-muted-foreground text-sm ml-7">
@@ -175,7 +175,7 @@ export default function BarcodeScanner() {
             </div>
             <div className="space-y-2">
               <h3 className="flex items-center gap-2">
-                <Keyboard className="h-5 w-5 text-blue-600" />
+                <Keyboard className="h-5 w-5 text-primary" />
                 Manual Mode
               </h3>
               <ul className="space-y-1 text-muted-foreground text-sm ml-7">

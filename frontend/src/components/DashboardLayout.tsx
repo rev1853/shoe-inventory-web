@@ -57,30 +57,30 @@ export default function DashboardLayout({ children, onLogout, currentUser }: Das
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="outline"
           size="icon"
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="bg-white"
+          className="bg-card"
         >
           {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
       </div>
 
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 transition-transform duration-300 z-40 flex flex-col
+        className={`fixed top-0 left-0 h-full w-64 bg-card border-r border-border transition-transform duration-300 z-40 flex flex-col
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <Package className="w-6 h-6 text-white" />
             </div>
             <div>
               <div className="font-semibold">Shoe Store</div>
-              <div className="text-sm text-gray-500">Inventory</div>
+              <div className="text-sm text-muted-foreground">Inventory</div>
             </div>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function DashboardLayout({ children, onLogout, currentUser }: Das
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
-                    ${isActive ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'}`}
+                    ${isActive ? 'bg-muted text-primary' : 'text-foreground hover:bg-muted'}`}
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.label}</span>
@@ -106,22 +106,22 @@ export default function DashboardLayout({ children, onLogout, currentUser }: Das
             })}
         </nav>
 
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 mb-2">
+        <div className="p-4 border-t border-border">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted mb-2">
             <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-blue-600 text-white">
+              <AvatarFallback className="bg-primary text-white">
                 {getInitials(currentUser.name)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium truncate">{currentUser.name}</div>
-              <div className="text-xs text-gray-500 truncate">{currentUser.email}</div>
-              <div className="text-xs text-gray-500">{currentUser.role === 'admin' ? 'Admin' : 'Staff'}</div>
+              <div className="text-xs text-muted-foreground truncate">{currentUser.email}</div>
+              <div className="text-xs text-muted-foreground">{currentUser.role === 'admin' ? 'Admin' : 'Staff'}</div>
             </div>
           </div>
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="w-full justify-start gap-3 text-primary hover:bg-muted"
             onClick={onLogout}
           >
             <LogOut className="w-5 h-5" />
