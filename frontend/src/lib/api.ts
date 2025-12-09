@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { toast } from 'sonner@2.0.3';
+import { getStoredApiBaseUrl } from './serverConfig';
 
 const api = axios.create({
-    baseURL: 'https://shoe-inventory-api.truesurvi4.xyz/api',
-    // baseURL: "http://localhost:8000/api"
+    baseURL: getStoredApiBaseUrl(),
 });
 
 let unauthorizedHandler: (() => void) | null = null;

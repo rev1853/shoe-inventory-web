@@ -13,118 +13,119 @@ import VariantDetail from './components/VariantDetail';
 import api, { setAuthToken, setUnauthorizedHandler } from './lib/api';
 import { User } from './lib/types';
 import { toast } from 'sonner@2.0.3';
+import { clearStoredAuth, loadStoredAuthToken, persistAuthToken } from './lib/authStorage';
 
 const unpackUser = (payload: any): User => {
-  if (payload?.data?.email) return payload.data as User;
-  return payload as User;
+    if (payload?.data?.email) return payload.data as User;
+    return payload as User;
 };
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState<User | null>(null);
+    const [initializing, setInitializing] = useState(true);
 
-  useEffect(() => {
-    setUnauthorizedHandler(() => {
-      setAuthToken(null);
-      localStorage.removeItem('auth_token');
-      setUser(null);
-    });
+    useEffect(() => {
+        setUnauthorizedHandler(() => {
+            setAuthToken(null);
+            clearStoredAuth();
+            setUser(null);
+        });
 
-    const storedToken = localStorage.getItem('auth_token');
-    if (!storedToken) {
-      setInitializing(false);
-      return;
+        const storedToken = loadStoredAuthToken();
+        if (!storedToken) {
+            setInitializing(false);
+            return;
+        }
+
+        setAuthToken(storedToken);
+        api
+            .get<User>('/auth/me')
+            .then((response) => setUser(unpackUser(response.data)))
+            .catch((error) => {
+                console.error('Failed to restore session', error);
+                toast.error('Session expired. Please log in again.');
+                setAuthToken(null);
+                clearStoredAuth();
+            })
+            .finally(() => setInitializing(false));
+    }, []);
+
+    const handleLogin = async (email: string, password: string, remember: boolean) => {
+        const { data } = await api.post<{ token: string; user: User }>('/auth/login', {
+            email,
+            password,
+        });
+
+        setAuthToken(data.token);
+        persistAuthToken(data.token, remember);
+        setUser(unpackUser(data.user));
+    };
+
+    const handleLogout = async () => {
+        try {
+            await api.post('/auth/logout');
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setAuthToken(null);
+            clearStoredAuth();
+            setUser(null);
+        }
+    };
+
+    if (initializing) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p className="text-gray-500">Loading...</p>
+            </div>
+        );
     }
 
-    setAuthToken(storedToken);
-    api
-      .get<User>('/auth/me')
-      .then((response) => setUser(unpackUser(response.data)))
-      .catch((error) => {
-        console.error('Failed to restore session', error);
-        toast.error('Session expired. Please log in again.');
-        setAuthToken(null);
-        localStorage.removeItem('auth_token');
-      })
-      .finally(() => setInitializing(false));
-  }, []);
+    const defaultRoute = user?.role === 'admin' ? '/dashboard' : '/products';
 
-  const handleLogin = async (email: string, password: string) => {
-    const { data } = await api.post<{ token: string; user: User }>('/auth/login', {
-      email,
-      password,
-    });
+    const renderIfAllowed = (roles: Array<User['role']>, element: JSX.Element) => {
+        if (!user) return null;
+        return roles.includes(user.role) ? element : <Navigate to={defaultRoute} replace />;
+    };
 
-    setAuthToken(data.token);
-    localStorage.setItem('auth_token', data.token);
-    setUser(unpackUser(data.user));
-  };
-
-  const handleLogout = async () => {
-    try {
-      await api.post('/auth/logout');
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setAuthToken(null);
-      localStorage.removeItem('auth_token');
-      setUser(null);
-    }
-  };
-
-  if (initializing) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
-      </div>
+        <BrowserRouter>
+            <Routes>
+                <Route
+                    path="/login"
+                    element={user ? <Navigate to={defaultRoute} replace /> : <LoginPage onLogin={handleLogin} />}
+                />
+                <Route
+                    path="/*"
+                    element={
+                        user ? (
+                            <DashboardLayout currentUser={user} onLogout={handleLogout}>
+                                <Routes>
+                                    <Route path="/dashboard" element={renderIfAllowed(['admin'], <Dashboard />)} />
+                                    <Route
+                                        path="/products"
+                                        element={renderIfAllowed(['admin', 'staff'], <Products canManage={user.role === 'admin'} />)}
+                                    />
+                                    <Route path="/variants" element={renderIfAllowed(['admin', 'staff'], <Variants role={user.role} />)} />
+                                    <Route path="/suppliers" element={renderIfAllowed(['admin'], <Suppliers />)} />
+                                    <Route path="/users" element={renderIfAllowed(['admin'], <Users />)} />
+                                    <Route path="/stock-movements" element={renderIfAllowed(['admin', 'staff'], <StockMovements />)} />
+                                    <Route path="/barcode-scanner" element={renderIfAllowed(['admin', 'staff'], <BarcodeScanner />)} />
+                                    <Route
+                                        path="/variant-detail/:code"
+                                        element={renderIfAllowed(['admin', 'staff'], <VariantDetail currentUser={user} />)}
+                                    />
+                                    <Route path="*" element={<Navigate to={defaultRoute} replace />} />
+                                </Routes>
+                            </DashboardLayout>
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
+            </Routes>
+        </BrowserRouter>
     );
-  }
-
-  const defaultRoute = user?.role === 'admin' ? '/dashboard' : '/products';
-
-  const renderIfAllowed = (roles: Array<User['role']>, element: JSX.Element) => {
-    if (!user) return null;
-    return roles.includes(user.role) ? element : <Navigate to={defaultRoute} replace />;
-  };
-
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/login"
-          element={user ? <Navigate to={defaultRoute} replace /> : <LoginPage onLogin={handleLogin} />}
-        />
-        <Route
-          path="/*"
-          element={
-            user ? (
-              <DashboardLayout currentUser={user} onLogout={handleLogout}>
-                <Routes>
-                  <Route path="/dashboard" element={renderIfAllowed(['admin'], <Dashboard />)} />
-                  <Route
-                    path="/products"
-                    element={renderIfAllowed(['admin', 'staff'], <Products canManage={user.role === 'admin'} />)}
-                  />
-                  <Route path="/variants" element={renderIfAllowed(['admin', 'staff'], <Variants role={user.role} />)} />
-                  <Route path="/suppliers" element={renderIfAllowed(['admin'], <Suppliers />)} />
-                  <Route path="/users" element={renderIfAllowed(['admin'], <Users />)} />
-                  <Route path="/stock-movements" element={renderIfAllowed(['admin', 'staff'], <StockMovements />)} />
-                  <Route path="/barcode-scanner" element={renderIfAllowed(['admin', 'staff'], <BarcodeScanner />)} />
-                  <Route
-                    path="/variant-detail/:code"
-                    element={renderIfAllowed(['admin', 'staff'], <VariantDetail currentUser={user} />)}
-                  />
-                  <Route path="*" element={<Navigate to={defaultRoute} replace />} />
-                </Routes>
-              </DashboardLayout>
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-      </Routes>
-    </BrowserRouter>
-  );
 }
 
 export default App;
