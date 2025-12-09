@@ -47,23 +47,23 @@ pipeline {
             }
         }
 
-        // stage('Run Migrations') {
-        //     steps {
-        //         sh 'docker compose run --rm backend php artisan migrate --force'
-        //     }
-        // }
+        stage('Run Migrations') {
+            steps {
+                sh 'docker compose run --rm backend php artisan migrate --force'
+            }
+        }
 
-        // stage('Seed Database') {
-        //     steps {
-        //         sh 'docker compose run --rm backend php artisan db:seed --force'
-        //     }
-        // }
+        stage('Seed Database') {
+            steps {
+                sh 'docker compose run --rm backend php artisan db:seed --force'
+            }
+        }
 
-        // stage('Link Storage') {
-        //     steps {
-        //         sh 'docker compose run --rm --user root backend sh -c "chown -R www-data:www-data public storage && php artisan storage:link --force"'
-        //     }
-        // }
+        stage('Link Storage') {
+            steps {
+                sh 'docker compose run --rm --user root backend sh -c "chown -R www-data:www-data public storage && php artisan storage:link --force"'
+            }
+        }
 
         stage('Deploy Containers') {
             steps {
